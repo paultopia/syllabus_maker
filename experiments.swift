@@ -9,27 +9,23 @@ extension Date: Strideable {
     }
 }
 
+extension Date {
+    func weekday() -> String {
+        var formatter = DateFormatter()
+        formatter.dateFormat = "eeee"
+        return formatter.string(from: self)
+    }
+}
+
 func dateSpan(from: Date, to: Date) -> [Date] {
     let dayDurationInSeconds = 60*60*24
+    
     var out: [Date] = []
     for date in stride(from: from, to: to, by: TimeInterval(dayDurationInSeconds)) {
         out.append(date)
     }
     return out
 }
-
-func convertDateFormat(dateString: String, inFormat: String, outFormat: String) -> String? {
-    var inFormatter = DateFormatter()
-    inFormatter.dateFormat = inFormat
-    var outFormatter = DateFormatter()
-    outFormatter.dateFormat = outFormat
-    if let date = inFormatter.date(from: dateString) {
-        return outFormatter.string(from: date)
-    }
-    return nil
-}
-
-convertDateFormat(dateString: "2014-07-15", inFormat: "yyyy-MM-dd", outFormat: "eeee, MMMM d")
 
 struct Semester {
     let startDate: Date
@@ -81,7 +77,7 @@ struct Semester {
     func validDates() -> [String] {
         var out = [String]()
         for date in dateSpan(from: startDate, to: endDate) {
-            if !offDays.contains(date) {
+            if classDays.contains(date.weekday()) && !offDays.contains(date) {
                 out.append(outFormatter.string(from: date))
             }
         }
@@ -89,7 +85,7 @@ struct Semester {
     }
 }
 
-var sampleSemest = Semester(starts: "2014-07-15", ends: "2014-07-30", classDays: ["Monday"])!
-sampleSemest.addHoliday(startDate: "2014-07-16", endDate: "2014-07-20")
+var sampleSemest = Semester(starts: "2019-02-01", ends: "2019-02-27", classDays: ["Monday"])!
+sampleSemest.addHoliday(startDate: "2019-02-15", endDate: "2019-02-24")
 sampleSemest
 let foo = sampleSemest.validDates()
