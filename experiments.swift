@@ -1,5 +1,12 @@
 import Foundation
 
+extension DateFormatter {
+    convenience init(format: String) {
+        self.init()
+        self.dateFormat = format
+    }
+}
+
 extension Date: Strideable {
     public func distance(to other: Date) -> TimeInterval {
         return other.timeIntervalSinceReferenceDate - self.timeIntervalSinceReferenceDate
@@ -11,15 +18,13 @@ extension Date: Strideable {
 
 extension Date {
     func weekday() -> String {
-        var formatter = DateFormatter()
-        formatter.dateFormat = "eeee"
+        var formatter = DateFormatter(format: "eeee")
         return formatter.string(from: self)
     }
 }
 
 func dateSpan(from: Date, to: Date) -> [Date] {
     let dayDurationInSeconds = 60*60*24
-    
     var out: [Date] = []
     for date in stride(from: from, to: to, by: TimeInterval(dayDurationInSeconds)) {
         out.append(date)
@@ -30,19 +35,11 @@ func dateSpan(from: Date, to: Date) -> [Date] {
 struct Semester {
     let startDate: Date
     let endDate: Date
-    let inFormat = "yyyy-MM-dd"
-    let outFormat = "eeee, MMMM d"
-    let inFormatter: DateFormatter
-    let outFormatter: DateFormatter
+    let inFormatter = DateFormatter(format: "yyyy-MM-dd")
+    let outFormatter = DateFormatter(format: "eeee, MMMM d")
     let classDays: [String]
     var offDays: [Date] = []
     init?(starts: String, ends: String, classDays: [String]) {
-        var inFormatter = DateFormatter()
-        inFormatter.dateFormat = inFormat
-        self.inFormatter = inFormatter
-        var outFormatter = DateFormatter()
-        outFormatter.dateFormat = outFormat
-        self.outFormatter = outFormatter
         self.classDays = classDays
         if let sd = inFormatter.date(from: starts), let ed = inFormatter.date(from: ends) {
             guard ed > sd else {return nil}
@@ -85,7 +82,7 @@ struct Semester {
     }
 }
 
-var sampleSemest = Semester(starts: "2019-02-01", ends: "2019-02-27", classDays: ["Monday"])!
+var sampleSemest = Semester(starts: "2019-02-01", ends: "2019-02-27", classDays: ["Monday", "Tuesday"])!
 sampleSemest.addHoliday(startDate: "2019-02-15", endDate: "2019-02-24")
 sampleSemest
 let foo = sampleSemest.validDates()
