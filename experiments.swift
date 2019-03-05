@@ -3,7 +3,10 @@ import Foundation
 extension DateFormatter {
     convenience init(format: String) {
         self.init()
+        // tryna be sensible per https://developer.apple.com/documentation/foundation/dateformatter 
+        self.locale = Locale(identifier: "en_US_POSIX")
         self.dateFormat = format
+        self.timeZone = TimeZone(secondsFromGMT: 0)
     }
 }
 
